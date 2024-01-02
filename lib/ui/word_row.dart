@@ -45,7 +45,7 @@ class _WordRowState extends State<WordRow> with TickerProviderStateMixin {
                   padding: const EdgeInsets.all(4),
                   child: Consumer<Game>(builder: (BuildContext context, Game value, Widget? child) {
                     runAnimationIfNeeded(value);
-                    return LetterTile(letter: value.letterAt(widget.rowIndex, i));
+                    return LetterTile(row: widget.rowIndex, column: i);
                   }))
           ],
         ));
