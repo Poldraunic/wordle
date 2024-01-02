@@ -31,6 +31,8 @@ class Game extends ChangeNotifier {
 
   int get currentAttempt => _currentAttempt;
 
+  int get currentRow => _currentAttempt - 1;
+
   String get currentWord => _currentWord;
 
   GameState get state => _state;
@@ -64,7 +66,6 @@ class Game extends ChangeNotifier {
     }
 
     if (_currentWord.length == 5) {
-      print("letter limit reached");
       return;
     }
 
@@ -72,8 +73,8 @@ class Game extends ChangeNotifier {
     assert(letter.length == 1);
     assert(letter.contains(RegExp("\\w")));
 
+    _state = GameState.inProgress;
     _currentWord += letter.toUpperCase();
-
     notifyListeners();
   }
 
@@ -92,6 +93,7 @@ class Game extends ChangeNotifier {
       return;
     }
 
+    _state = GameState.inProgress;
     _currentWord = _currentWord.substring(0, math.max(0, _currentWord.length - 1));
     notifyListeners();
   }
