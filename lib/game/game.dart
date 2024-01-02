@@ -23,7 +23,6 @@ class Game extends ChangeNotifier {
   late List<WordMatchResult> _guesses;
   late String _currentWord;
   late Map<String, LetterMatch> _usedLetters;
-  bool _finished = false;
   late GameState _state;
 
   int get attempts => _attempts;
@@ -58,7 +57,7 @@ class Game extends ChangeNotifier {
   }
 
   void pushLetter(String letter) {
-    if (_finished) {
+    if (_isFinished()) {
       return;
     }
 
@@ -78,7 +77,7 @@ class Game extends ChangeNotifier {
   }
 
   void pushLetters(String letters) {
-    if (_finished) {
+    if (_isFinished()) {
       return;
     }
 
@@ -88,7 +87,7 @@ class Game extends ChangeNotifier {
   }
 
   void popLetter() {
-    if (_finished) {
+    if (_isFinished()) {
       return;
     }
 
@@ -98,7 +97,7 @@ class Game extends ChangeNotifier {
   }
 
   void submit() {
-    if (_finished) {
+    if (_isFinished()) {
       return;
     }
 
@@ -109,7 +108,6 @@ class Game extends ChangeNotifier {
     }
 
     if (_currentWord == _secretWord) {
-      _finished = true;
       _saveCurrentWord();
       _state = GameState.win;
       notifyListeners();
@@ -118,8 +116,6 @@ class Game extends ChangeNotifier {
 
     if (_currentAttempt == _attempts) {
       print("Your word was $_secretWord");
-
-      _finished = true;
       _state = GameState.lose;
       _saveCurrentWord();
       notifyListeners();
@@ -143,7 +139,6 @@ class Game extends ChangeNotifier {
     _currentWord = "";
     _secretWord = "";
     _guesses = [];
-    _finished = false;
     _usedLetters = {};
     _state = GameState.inProgress;
   }
@@ -185,5 +180,9 @@ class Game extends ChangeNotifier {
 
   void _randomizeSecretWord() {
     _secretWord = answers.elementAt(math.Random().nextInt(answers.length)).toUpperCase();
+  }
+
+  bool _isFinished() {
+    return _state == GameState.win || _state == GameState.lose;
   }
 }
