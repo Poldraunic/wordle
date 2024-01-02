@@ -1,5 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:wordle/game/game.dart';
 import 'package:wordle/ui/common.dart';
 import 'package:wordle/ui/word_row.dart';
 
@@ -29,6 +31,7 @@ class _BoardState extends State<Board> {
 
   @override
   Widget build(BuildContext context) {
+    final attempts = context.read<Game>().attempts;
     return KeyboardListener(
         focusNode: focusNode,
         autofocus: true,
@@ -39,7 +42,7 @@ class _BoardState extends State<Board> {
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [for (int i = 0; i < 6; ++i) WordRow(rowIndex: i)],
+          children: [for (int i = 0; i < attempts; ++i) WordRow(rowIndex: i)],
         ));
   }
 }
