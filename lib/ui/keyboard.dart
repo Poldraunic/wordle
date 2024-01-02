@@ -2,8 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wordle/game/game.dart';
 import 'package:wordle/game/letter.dart';
-
-typedef KeyboardCallback = Function(LogicalKeyboardKey);
+import 'package:wordle/ui/common.dart';
 
 class Keyboard extends StatelessWidget {
   const Keyboard({super.key, required this.game, required this.onTap});

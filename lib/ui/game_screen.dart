@@ -13,7 +13,6 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   late Game game;
-  late FocusNode focusNode;
 
   void handleKey(LogicalKeyboardKey key) {
     switch (key) {
@@ -37,14 +36,11 @@ class _GameScreenState extends State<GameScreen> {
     game.addListener(() {
       setState(() {});
     });
-
-    focusNode = FocusNode();
   }
 
   @override
   void dispose() {
     game.dispose();
-    focusNode.dispose();
     super.dispose();
   }
 
@@ -54,17 +50,7 @@ class _GameScreenState extends State<GameScreen> {
         color: const Color(0xff121213),
         child: Column(children: [
           Expanded(
-            child: KeyboardListener(
-                focusNode: focusNode,
-                autofocus: true,
-                onKeyEvent: (KeyEvent event) {
-                  if (event is! KeyDownEvent) {
-                    return;
-                  }
-
-                  handleKey(event.logicalKey);
-                },
-                child: Board(game: game)),
+            child: Board(game: game, onTap: handleKey),
           ),
           Padding(
             padding: const EdgeInsets.all(24),
