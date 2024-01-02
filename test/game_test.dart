@@ -7,16 +7,16 @@ void main() {
     var vm = Game();
 
     vm.pushLetters('XXXX');
-    expect(vm.submit(), SubmitResult.notEnoughLetters);
+    expect(vm.submit(), GameState.notEnoughLetters);
 
     vm.pushLetter('X');
-    expect(vm.submit(), isNot(SubmitResult.notEnoughLetters));
+    expect(vm.submit(), isNot(GameState.notEnoughLetters));
   });
 
   test('Submit with incorrect word', () {
     var vm = Game.withSecretWord("hello");
     vm.pushLetters("color");
-    expect(vm.submit(), SubmitResult.incorrectWord);
+    expect(vm.submit(), GameState.incorrectWord);
   });
 
   test('Exhaust all attempts', () {
@@ -24,19 +24,19 @@ void main() {
     for (int i = vm.currentAttempt; i < vm.attempts; ++i) {
       vm.pushLetters("color");
       expect(vm.currentAttempt, i);
-      expect(vm.submit(), SubmitResult.incorrectWord);
+      expect(vm.submit(), GameState.incorrectWord);
     }
     vm.pushLetters("color");
     expect(vm.currentAttempt, vm.attempts);
-    expect(vm.submit(), SubmitResult.lose);
+    expect(vm.submit(), GameState.lose);
   });
 
   test('Clean-up current word after submit', () {
     var vm = Game.withSecretWord("hello");
     vm.pushLetters("color");
-    expect(vm.submit(), SubmitResult.incorrectWord);
+    expect(vm.submit(), GameState.incorrectWord);
     expect(vm.currentWord, isEmpty);
-    expect(vm.submit(), SubmitResult.notEnoughLetters);
+    expect(vm.submit(), GameState.notEnoughLetters);
   });
 
   test('Pop letters', () {
@@ -68,7 +68,7 @@ void main() {
     expect(vm.lastGuessLetterMatchResult(), isNull);
 
     vm.pushLetters("COLOR");
-    expect(vm.submit(), SubmitResult.incorrectWord);
+    expect(vm.submit(), GameState.incorrectWord);
 
     WordMatchResult? matchResult = vm.lastGuessLetterMatchResult();
     expect(matchResult, isNotNull);

@@ -7,7 +7,8 @@ import 'package:wordle/game/words.dart';
 
 typedef WordMatchResult = List<Letter>;
 
-enum SubmitResult {
+enum GameState {
+  inProgress,
   notEnoughLetters,
   noSuchWord,
   incorrectWord,
@@ -93,20 +94,20 @@ class Game extends ChangeNotifier {
     notifyListeners();
   }
 
-  SubmitResult submit() {
+  GameState submit() {
     if (_finished) {
-      return SubmitResult.win;
+      return GameState.win;
     }
 
     if (_currentWord.length < 5) {
-      return SubmitResult.notEnoughLetters;
+      return GameState.notEnoughLetters;
     }
 
     if (_currentWord == _secretWord) {
       _finished = true;
       _saveCurrentWord();
       notifyListeners();
-      return SubmitResult.win;
+      return GameState.win;
     }
 
     if (_currentAttempt == _attempts) {
@@ -115,17 +116,17 @@ class Game extends ChangeNotifier {
       _finished = true;
       _saveCurrentWord();
       notifyListeners();
-      return SubmitResult.lose;
+      return GameState.lose;
     }
 
     if (!_isCurrentWordValid()) {
       notifyListeners();
-      return SubmitResult.noSuchWord;
+      return GameState.noSuchWord;
     }
 
     _saveCurrentWord();
     notifyListeners();
-    return SubmitResult.incorrectWord;
+    return GameState.incorrectWord;
   }
 
   void restart() {
