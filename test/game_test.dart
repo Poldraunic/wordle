@@ -4,73 +4,81 @@ import 'package:wordle/game/letter.dart';
 
 void main() {
   test('Submit with less letters than required', () {
-    var vm = Game();
+    var game = Game();
 
-    vm.pushLetters('XXXX');
-    expect(vm.submit(), GameState.notEnoughLetters);
+    game.pushLetters('XXXX');
+    game.submit();
+    expect(game.state, GameState.notEnoughLetters);
 
-    vm.pushLetter('X');
-    expect(vm.submit(), isNot(GameState.notEnoughLetters));
+    game.pushLetter('X');
+    game.submit();
+    expect(game.state, isNot(GameState.notEnoughLetters));
   });
 
   test('Submit with incorrect word', () {
-    var vm = Game.withSecretWord("hello");
-    vm.pushLetters("color");
-    expect(vm.submit(), GameState.incorrectWord);
+    var game = Game.withSecretWord("hello");
+    game.pushLetters("color");
+    game.submit();
+    expect(game.state, GameState.incorrectWord);
   });
 
   test('Exhaust all attempts', () {
-    var vm = Game.withSecretWord("hello");
-    for (int i = vm.currentAttempt; i < vm.attempts; ++i) {
-      vm.pushLetters("color");
-      expect(vm.currentAttempt, i);
-      expect(vm.submit(), GameState.incorrectWord);
+    var game = Game.withSecretWord("hello");
+    for (int i = game.currentAttempt; i < game.attempts; ++i) {
+      game.pushLetters("color");
+      expect(game.currentAttempt, i);
+      game.submit();
+      expect(game.state, GameState.incorrectWord);
     }
-    vm.pushLetters("color");
-    expect(vm.currentAttempt, vm.attempts);
-    expect(vm.submit(), GameState.lose);
+    game.pushLetters("color");
+    expect(game.currentAttempt, game.attempts);
+    game.submit();
+    expect(game.state, GameState.lose);
   });
 
   test('Clean-up current word after submit', () {
-    var vm = Game.withSecretWord("hello");
-    vm.pushLetters("color");
-    expect(vm.submit(), GameState.incorrectWord);
-    expect(vm.currentWord, isEmpty);
-    expect(vm.submit(), GameState.notEnoughLetters);
+    var game = Game.withSecretWord("hello");
+    game.pushLetters("color");
+    game.submit();
+    expect(game.state, GameState.incorrectWord);
+    expect(game.currentWord, isEmpty);
+    game.submit();
+    expect(game.state, GameState.notEnoughLetters);
   });
 
   test('Pop letters', () {
-    var vm = Game.withSecretWord("hello");
-    expect(vm.currentWord, isEmpty);
+    var game = Game.withSecretWord("hello");
+    expect(game.currentWord, isEmpty);
 
-    vm.pushLetters("color");
-    expect(vm.currentWord, "COLOR");
+    game.pushLetters("color");
+    expect(game.currentWord, "COLOR");
 
-    vm.popLetter();
-    expect(vm.currentWord, "COLO");
+    game.popLetter();
+    expect(game.currentWord, "COLO");
 
-    vm.popLetter();
-    expect(vm.currentWord, "COL");
+    game.popLetter();
+    expect(game.currentWord, "COL");
 
-    vm.popLetter();
-    expect(vm.currentWord, "CO");
+    game.popLetter();
+    expect(game.currentWord, "CO");
 
-    vm.popLetter();
-    expect(vm.currentWord, "C");
+    game.popLetter();
+    expect(game.currentWord, "C");
 
-    vm.popLetter();
-    expect(vm.currentWord, isEmpty);
+    game.popLetter();
+    expect(game.currentWord, isEmpty);
   });
 
   test('Letter guess matrix', () {
-    var vm = Game.withSecretWord("HELLO");
+    var game = Game.withSecretWord("HELLO");
 
-    expect(vm.lastGuessLetterMatchResult(), isNull);
+    expect(game.lastGuessLetterMatchResult(), isNull);
 
-    vm.pushLetters("COLOR");
-    expect(vm.submit(), GameState.incorrectWord);
+    game.pushLetters("COLOR");
+    game.submit();
+    expect(game.state, GameState.incorrectWord);
 
-    WordMatchResult? matchResult = vm.lastGuessLetterMatchResult();
+    WordMatchResult? matchResult = game.lastGuessLetterMatchResult();
     expect(matchResult, isNotNull);
 
     expect(matchResult![0].matchResult, LetterMatch.noMatch);

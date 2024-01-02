@@ -24,12 +24,15 @@ class Game extends ChangeNotifier {
   late String _currentWord;
   late Map<String, LetterMatch> _usedLetters;
   bool _finished = false;
+  late GameState _state;
 
   int get attempts => _attempts;
 
   int get currentAttempt => _currentAttempt;
 
   String get currentWord => _currentWord;
+
+  GameState get state => _state;
 
   Game() {
     restart();
@@ -94,39 +97,44 @@ class Game extends ChangeNotifier {
     notifyListeners();
   }
 
-  GameState submit() {
+  void submit() {
     if (_finished) {
-      return GameState.win;
+      return;
     }
 
     if (_currentWord.length < 5) {
-      return GameState.notEnoughLetters;
+      _state = GameState.notEnoughLetters;
+      notifyListeners();
+      return;
     }
 
     if (_currentWord == _secretWord) {
       _finished = true;
       _saveCurrentWord();
+      _state = GameState.win;
       notifyListeners();
-      return GameState.win;
+      return;
     }
 
     if (_currentAttempt == _attempts) {
       print("Your word was $_secretWord");
 
       _finished = true;
+      _state = GameState.lose;
       _saveCurrentWord();
       notifyListeners();
-      return GameState.lose;
+      return;
     }
 
     if (!_isCurrentWordValid()) {
+      _state = GameState.noSuchWord;
       notifyListeners();
-      return GameState.noSuchWord;
+      return;
     }
 
+    _state = GameState.incorrectWord;
     _saveCurrentWord();
     notifyListeners();
-    return GameState.incorrectWord;
   }
 
   void restart() {
@@ -137,6 +145,7 @@ class Game extends ChangeNotifier {
     _guesses = [];
     _finished = false;
     _usedLetters = {};
+    _state = GameState.inProgress;
   }
 
   WordMatchResult? lastGuessLetterMatchResult() {
