@@ -51,39 +51,18 @@ class Keyboard extends StatelessWidget {
 
     return Column(
       children: [
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          for (final logicalKey in topRow)
-            Padding(
-              padding: const EdgeInsets.all(2),
-              child: KeyWidget(
-                logicalKey: logicalKey,
-                letterMatch: game.matchForLetter(logicalKey.keyLabel),
-                onTap: onTap,
-              ),
-            )
-        ]),
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          for (final logicalKey in middleRow)
-            Padding(
-              padding: const EdgeInsets.all(2),
-              child: KeyWidget(
-                logicalKey: logicalKey,
-                letterMatch: game.matchForLetter(logicalKey.keyLabel),
-                onTap: onTap,
-              ),
-            )
-        ]),
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          for (final logicalKey in bottomRow)
-            Padding(
-              padding: const EdgeInsets.all(2),
-              child: KeyWidget(
-                logicalKey: logicalKey,
-                letterMatch: game.matchForLetter(logicalKey.keyLabel),
-                onTap: onTap,
-              ),
-            )
-        ]),
+        for (List<LogicalKeyboardKey> keys in [topRow, middleRow, bottomRow])
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            for (final logicalKey in keys)
+              Padding(
+                padding: const EdgeInsets.all(2),
+                child: KeyWidget(
+                  logicalKey: logicalKey,
+                  letterMatch: game.matchForLetter(logicalKey.keyLabel),
+                  onTap: onTap,
+                ),
+              )
+          ])
       ],
     );
   }
