@@ -103,7 +103,8 @@ class Game extends ChangeNotifier {
       return;
     }
 
-    // We need to call notifyListeners() function on all paths.
+    // We need to call notifyListeners() function on all paths and this,
+    // at the moment, seems like the best way to do so.
     scheduleMicrotask(() {
       notifyListeners();
     });
@@ -141,7 +142,7 @@ class Game extends ChangeNotifier {
     _currentAttempt = 1;
     _currentWord = "";
     _secretWord = "";
-    _guesses = [];
+    _guesses = List.filled(6, List<Letter>.filled(5, const Letter.empty(), growable: false), growable: false);
     _usedLetters = {};
     _state = GameState.inProgress;
   }
@@ -187,7 +188,7 @@ class Game extends ChangeNotifier {
           ifAbsent: () => letterMatch);
     }
 
-    _guesses.add(wordMatch);
+    _guesses[currentRow] = wordMatch;
     _currentWord = "";
     _currentAttempt++;
   }
