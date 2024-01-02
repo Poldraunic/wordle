@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wordle/game/game.dart';
 import 'package:wordle/ui/board.dart';
+import 'package:wordle/ui/keyboard.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -51,16 +52,24 @@ class _GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     return Container(
         color: const Color(0xff121213),
-        child: KeyboardListener(
-            focusNode: focusNode,
-            autofocus: true,
-            onKeyEvent: (KeyEvent event) {
-              if (event is! KeyDownEvent) {
-                return;
-              }
+        child: Column(children: [
+          Expanded(
+            child: KeyboardListener(
+                focusNode: focusNode,
+                autofocus: true,
+                onKeyEvent: (KeyEvent event) {
+                  if (event is! KeyDownEvent) {
+                    return;
+                  }
 
-              handleKey(event.logicalKey);
-            },
-            child: Board(game: game)));
+                  handleKey(event.logicalKey);
+                },
+                child: Board(game: game)),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Keyboard(game: game, onTap: handleKey),
+          ),
+        ]));
   }
 }
