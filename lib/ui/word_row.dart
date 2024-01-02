@@ -12,19 +12,53 @@ class WordRow extends StatefulWidget {
   State<WordRow> createState() => _WordRowState();
 }
 
-class _WordRowState extends State<WordRow> {
+class _WordRowState extends State<WordRow> with TickerProviderStateMixin {
+  late final AnimationController animationController = AnimationController(
+    value: 0,
+    duration: const Duration(milliseconds: 50),
+    lowerBound: -10,
+    upperBound: 10,
+    vsync: this,
+  );
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        for (int i = 0; i < 5; ++i)
-          Padding(
-              padding: const EdgeInsets.all(4),
-              child: Consumer<Game>(builder: (BuildContext context, Game value, Widget? child) {
-                return LetterTile(letter: value.letterAt(widget.rowIndex, i));
-              }))
-      ],
-    );
+    return AnimatedBuilder(
+        animation: animationController,
+        builder: (BuildContext context, Widget? widget) {
+          return Transform.translate(
+            offset: Offset(animationController.value, 0),
+            child: widget,
+          );
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (int i = 0; i < 5; ++i)
+              Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Consumer<Game>(builder: (BuildContext context, Game value, Widget? child) {
+                    runAnimationIfNeeded(value);
+                    return LetterTile(letter: value.letterAt(widget.rowIndex, i));
+                  }))
+          ],
+        ));
+  }
+
+  void runAnimationIfNeeded(Game game) async {
+    const List<GameState> animatableGameStates = [GameState.noSuchWord, GameState.notEnoughLetters];
+    if (animatableGameStates.contains(game.state) && game.currentRow == widget.rowIndex) {
+      for (int i = 0; i < 3; ++i) {
+        await animationController.forward();
+        await animationController.reverse();
+      }
+      await animationController.animateTo(0);
+    }
   }
 }
