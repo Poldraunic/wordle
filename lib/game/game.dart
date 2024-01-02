@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:characters/characters.dart';
@@ -72,7 +73,6 @@ class Game extends ChangeNotifier {
 
     _currentWord += letter.toUpperCase();
 
-    print("push: $letter");
     notifyListeners();
   }
 
@@ -92,7 +92,6 @@ class Game extends ChangeNotifier {
     }
 
     _currentWord = _currentWord.substring(0, math.max(0, _currentWord.length - 1));
-    print("(pop)");
     notifyListeners();
   }
 
@@ -101,36 +100,37 @@ class Game extends ChangeNotifier {
       return;
     }
 
+    // We need to call notifyListeners() function on all paths.
+    scheduleMicrotask(() {
+      notifyListeners();
+    });
+
+    // TODO: Is there a better way to do all these checks?
     if (_currentWord.length < 5) {
       _state = GameState.notEnoughLetters;
-      notifyListeners();
       return;
     }
 
     if (_currentWord == _secretWord) {
       _saveCurrentWord();
       _state = GameState.win;
-      notifyListeners();
       return;
     }
 
     if (_currentAttempt == _attempts) {
-      print("Your word was $_secretWord");
+      print("Your word was \"$_secretWord\"");
       _state = GameState.lose;
       _saveCurrentWord();
-      notifyListeners();
       return;
     }
 
     if (!_isCurrentWordValid()) {
       _state = GameState.noSuchWord;
-      notifyListeners();
       return;
     }
 
     _state = GameState.incorrectWord;
     _saveCurrentWord();
-    notifyListeners();
   }
 
   void restart() {
