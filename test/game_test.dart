@@ -69,12 +69,12 @@ void main() {
     expect(game.currentWord, isEmpty);
   });
 
-  test('Letter guess matrix', () {
+  test('Word match', () {
     var game = Game.withSecretWord("HELLO");
 
     expect(game.lastGuessLetterMatchResult(), isNull);
 
-    game.pushLetters("COLOR");
+    game.pushLetters("POLAR");
     game.submit();
     expect(game.state, GameState.incorrectWord);
 
@@ -84,7 +84,28 @@ void main() {
     expect(matchResult![0].matchResult, LetterMatch.noMatch);
     expect(matchResult[1].matchResult, LetterMatch.partialMatch);
     expect(matchResult[2].matchResult, LetterMatch.fullMatch);
-    expect(matchResult[3].matchResult, LetterMatch.partialMatch);
+    expect(matchResult[3].matchResult, LetterMatch.noMatch);
     expect(matchResult[4].matchResult, LetterMatch.noMatch);
+  });
+
+  test("Word match with repeating letters", () {
+    // This case features only 1 letter 'A' in a secret.
+    var game = Game.withSecretWord("AFTER");
+
+    // For the first attempt, only first 'A' should be counted as a full match,
+    // and the second one should have no match.
+    game.pushLetters("AWARE");
+    game.submit();
+    WordMatchResult? match = game.lastGuessLetterMatchResult();
+    expect(match, isNotNull);
+    expect(match![0].matchResult, LetterMatch.fullMatch);
+    expect(match[2].matchResult, LetterMatch.noMatch);
+
+    game.pushLetters("MAFIA");
+    game.submit();
+    match = game.lastGuessLetterMatchResult();
+    expect(match, isNotNull);
+    expect(match![1].matchResult, LetterMatch.partialMatch);
+    expect(match[4].matchResult, LetterMatch.noMatch);
   });
 }

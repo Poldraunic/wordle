@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:characters/characters.dart';
 import 'package:flutter/foundation.dart';
+import 'package:wordle/extensions/string_extensions.dart';
 import 'package:wordle/game/letter.dart';
 import 'package:wordle/game/words.dart';
 
@@ -153,19 +154,35 @@ class Game extends ChangeNotifier {
 
   void _saveCurrentWord() {
     WordMatchResult wordMatch = WordMatchResult.filled(5, const Letter.empty(), growable: false);
+    String secretWord = _secretWord;
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < secretWord.length; ++i) {
       String character = _currentWord[i];
       LetterMatch letterMatch = LetterMatch.noMatch;
+      int? indexToMask;
 
-      if (character == _secretWord[i]) {
+      if (character == secretWord[i]) {
         letterMatch = LetterMatch.fullMatch;
-      } else if (_secretWord.contains(character)) {
-        letterMatch = LetterMatch.partialMatch;
+        indexToMask = i;
+      } else {
+        final int index = secretWord.indexOf(character);
+        if (index != -1) {
+          letterMatch = LetterMatch.partialMatch;
+          indexToMask = index;
+        }
+      }
+
+      // Use this to mask already processed characters. This ensures that if, for example,
+      // user guess has same letter twice (or more), but secret has it only once, we will flag it only
+      // once as well.
+      if (indexToMask != null) {
+        secretWord = secretWord.replaceAt(indexToMask, "_");
       }
 
       wordMatch[i] = Letter(character, letterMatch);
-      _usedLetters[character] = letterMatch;
+
+      _usedLetters.update(character, (value) => letterMatch.index > value.index ? letterMatch : value,
+          ifAbsent: () => letterMatch);
     }
 
     _guesses.add(wordMatch);
