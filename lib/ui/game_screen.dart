@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:wordle/game/game.dart';
 import 'package:wordle/ui/board.dart';
 import 'package:wordle/ui/keyboard.dart';
@@ -12,36 +13,18 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  late Game game;
-
   void handleKey(LogicalKeyboardKey key) {
     switch (key) {
       case LogicalKeyboardKey.backspace:
-        game.popLetter();
+        context.read<Game>().popLetter();
       case LogicalKeyboardKey.enter || LogicalKeyboardKey.numpadEnter:
-        game.submit();
+        context.read<Game>().submit();
       default:
         String letter = key.keyLabel;
         if (letter.length == 1 && letter.contains(RegExp("[a-zA-Z]"))) {
-          game.pushLetter(letter);
+          context.read<Game>().pushLetter(letter);
         }
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    game = Game();
-    game.addListener(() {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    game.dispose();
-    super.dispose();
   }
 
   @override
@@ -50,11 +33,11 @@ class _GameScreenState extends State<GameScreen> {
         color: const Color(0xff121213),
         child: Column(children: [
           Expanded(
-            child: Board(game: game, onTap: handleKey),
+            child: Board(onTap: handleKey),
           ),
           Padding(
             padding: const EdgeInsets.all(24),
-            child: Keyboard(game: game, onTap: handleKey),
+            child: Keyboard(onTap: handleKey),
           ),
         ]));
   }

@@ -1,13 +1,13 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:wordle/game/game.dart';
 import 'package:wordle/game/letter.dart';
 import 'package:wordle/ui/common.dart';
 
 class Keyboard extends StatelessWidget {
-  const Keyboard({super.key, required this.game, required this.onTap});
+  const Keyboard({super.key, required this.onTap});
 
-  final Game game;
   final KeyboardCallback onTap;
 
   @override
@@ -55,13 +55,14 @@ class Keyboard extends StatelessWidget {
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             for (final logicalKey in keys)
               Padding(
-                padding: const EdgeInsets.all(2),
-                child: KeyWidget(
-                  logicalKey: logicalKey,
-                  letterMatch: game.matchForLetter(logicalKey.keyLabel),
-                  onTap: onTap,
-                ),
-              )
+                  padding: const EdgeInsets.all(2),
+                  child: Consumer<Game>(builder: (BuildContext context, Game value, Widget? child) {
+                    return KeyWidget(
+                      logicalKey: logicalKey,
+                      letterMatch: value.matchForLetter(logicalKey.keyLabel),
+                      onTap: onTap,
+                    );
+                  }))
           ])
       ],
     );
