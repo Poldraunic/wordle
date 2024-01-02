@@ -62,8 +62,7 @@ abstract class _BaseLetterTile extends StatelessWidget {
         color: backgroundColor(letter),
         border: Border.all(width: 2, color: borderColor(letter)),
       ),
-      child: Align(
-        alignment: Alignment.center,
+      child: Center(
         child: Text(
           style: const TextStyle(fontSize: 24, color: Color(0xffffffff)),
           textAlign: TextAlign.center,
